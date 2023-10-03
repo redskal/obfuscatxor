@@ -9,60 +9,11 @@ Functionality provided at present:
 - XOR strings with variable-length key
 - Generate CRC64 hashes of strings
 
-#### Usage
-
-To use the string XOR function do as follows:
-~~~go
-import (
-    "fmt"
-    
-    "github.com/redskal/obfuscatxor/pkg/obfuscate"
-)
-
-func main() {
-    // Key: "ObfuscateThis", String: "Just a test string"
-	test1 = []byte{
-		0x05, 0x17, 0x15, 0x01, 0x53, 0x02, 0x41, 0x00, 0x00, 0x27, 0x1c, 0x49, 0x00, 0x3b, 0x10,
-		0x0f, 0x1b, 0x14}
-    fmt.Println(obfuscate.StringXOR(string(test1), "ObfuscateThis"))
-}
-~~~
-
-Output will be:
-
-~~~
-Just a test string
-~~~
-
-To use the CRC64 hashing it's equally as simple:
-
-~~~go
-import (
-    "fmt"
-    
-	"github.com/redskal/obfuscatxor/pkg/obfuscate"
-)
-
-func main() {
-    hash1 uint64 := 4933402316976831528
-    str := "hash me please"
-    if hash1 == obfuscate.GetCRCHash(str) {
-        fmt.Println("It's the same")
-    } else {
-        fmt.Println("Wrong-o!")
-    }
-}
-~~~
-
-Output will be:
-
-~~~
-It's the same
-~~~
+_Updated with a suggestion from [C-Sto](https://x.com/C__Sto/status/1707590550906659059?s=20) to include the XOR and hashing functions inside the template to avoid loading the external library._
 
 #### Compile-time usage
 
-Create a file (ex: `strings_in.go`) using the following format:
+Create a file (ex: `strings.go`) using the following format:
 ~~~go
 //go:generate go run github.com/redskal/obfuscatxor/cmd/obfuscator -output strings-out.go strings.go
 package testing
@@ -83,6 +34,13 @@ Output file will look like this:
 
 package testing
 
+import (
+	"hash/crc64"
+	"math/rand"
+)
+
+var hashTable = crc64.MakeTable(crc64.ECMA)
+
 var (
 	// Key: "ObfuscateThis", String: "Just a test string"
 	test1 = []byte{
@@ -98,6 +56,52 @@ var (
 	hash2 uint64 = 15307073676716255198 // String: "another thing to hash"
 
 )
+[...SNIP...]
+~~~
+
+Just make sure the file is included in your project, and you'll have your obfuscated strings and the necessary functions included.
+
+#### Usage
+
+To use the string XOR function do as follows:
+~~~go
+import "fmt"
+
+func main() {
+    // Key: "ObfuscateThis", String: "Just a test string"
+	test1 = []byte{
+		0x05, 0x17, 0x15, 0x01, 0x53, 0x02, 0x41, 0x00, 0x00, 0x27, 0x1c, 0x49, 0x00, 0x3b, 0x10,
+		0x0f, 0x1b, 0x14}
+    fmt.Println(StringXOR(string(test1), "ObfuscateThis"))
+}
+~~~
+
+Output will be:
+
+~~~
+Just a test string
+~~~
+
+To use the CRC64 hashing it's equally as simple:
+
+~~~go
+import "fmt"
+
+func main() {
+    hash1 uint64 := 4933402316976831528
+    str := "hash me please"
+    if hash1 == obfuscate.GetCRCHash(str) {
+        fmt.Println("It's the same")
+    } else {
+        fmt.Println("Wrong-o!")
+    }
+}
+~~~
+
+Output will be:
+
+~~~
+It's the same
 ~~~
 
 #### Licence

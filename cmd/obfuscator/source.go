@@ -15,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-
-	"github.com/redskal/obfuscatxor/pkg/obfuscate"
 )
 
 const (
@@ -169,7 +167,7 @@ func newHash(s string) (*CRCHash, error) {
 	}
 
 	// hash the string using ECMA CRC64 hash table
-	uintHash := obfuscate.GetCRCHash(crc.Plaintext)
+	uintHash := GetCRCHash(crc.Plaintext)
 	crc.Hash = strconv.FormatUint(uintHash, 10)
 
 	return crc, nil
@@ -207,7 +205,7 @@ func newString(s string) (*ObsString, error) {
 	}
 
 	// encrypt the string and get a pretty version
-	str.Encrypted = []byte(obfuscate.StringXOR(str.Plaintext, str.Key))
+	str.Encrypted = []byte(StringXOR(str.Plaintext, str.Key))
 	str.EncryptedPretty = prettifyBytes(str.Encrypted)
 
 	return str, nil
